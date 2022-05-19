@@ -1,0 +1,16 @@
+// Code Authored by Ezekiel Blevins CSCE-312 SP'20
+
+/**
+ * Exclusive-Nor gate:
+ * out = (a == b)
+ */
+
+CHIP Xnor {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+	Xor(a = a, b = b, out = outtemp);
+	Not(in = outtemp, out = out);
+}

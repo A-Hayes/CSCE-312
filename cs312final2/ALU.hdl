@@ -1,0 +1,49 @@
+// Code Authored by Aakash Tyagi CSCE-312 SP'20
+
+CHIP ALU {
+    IN AluOp[2], x[16], y[16];
+    OUT AluOut[16];
+	
+	
+	// AluOp bits correspond to instruction[10:9] based on the following spec
+	
+	//Instructions are 12-bits: N[11:0] = N11 N10 N9 N8 N7 N6 N5 N4 N3 N2 N1 N0
+	
+	//N[11:10] are OPCODE Bits
+		//N[11:10] = 00 Arithmetic
+		//N[11:10] = 01 Logical
+	//N9 is OPTYPE Bit
+		//For the case where N[11:10] = 00: 
+			//N[9] = 0 is ADD, N[9] = 1 is SUB
+		//For the case where N[11:10] = 01: 
+			//N[9] = 0 is AND, N[9] = 1 is OR
+	
+	//AluOp[1] = N[10]
+	//AluOp[0] = N[9]
+	
+	//The overflow feature is disabled for the purpose of this exercise
+
+PARTS:
+
+	//invert the y input to prepare for executing a subtract operation
+	Not16(in[0..15] = y, out[0..15] = Noty);
+	
+	//send y and Noty to a Mux16 with aluop
+	Mux16(a=y, b=Noty, sel=AluOp[0], out=AddORSub);
+	
+	//perform Add/Subtract computation
+	Add16(a=x, b=AddORSub, carryIn=AluOp[0], out=AddSubOut, carry=Overflow);
+	
+	//perform AND logical operation
+	And16(a[0..15]=x, b[0..15]=y, out=AndOut);
+	
+	//perform OR logical operation
+	Or16(a[0..15]= x, b[0..15]=y, out=OrOut);
+	
+	//MUX between the logical operations
+	Mux16(a=AndOut, b=OrOut, sel=AluOp[0], out=LogicalOut);
+	
+	//MUX between the arithmetic and logical operations
+	Mux16(a=AddSubOut, b=LogicalOut, sel=AluOp[1], out=AluOut);
+	
+}

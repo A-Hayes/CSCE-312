@@ -1,0 +1,16 @@
+// Asa Hayes 525003952
+/**
+ * Adds two 4-bit values.
+ * Changed to inculde a carryin as needed for Add6
+ */
+
+CHIP Add4 {
+    IN a[4], b[4], carryIn;
+    OUT out[4],carry;
+
+    PARTS:
+    FullAdder(a=a[0],b=b[0],c=carryIn, sum=out[0],carry=car1);
+    FullAdder(a=a[1],b=b[1],c=car1, sum=out[1],carry=car2);
+    FullAdder(a=a[2],b=b[2],c=car2, sum=out[2],carry=car3);
+    FullAdder(a=a[3],b=b[3],c=car3, sum=out[3],carry=carry);
+}

@@ -1,0 +1,24 @@
+// Asa Hayes 525003952
+// Program Counter
+
+/**
+ * A 16-bit counter with load and reset control bits.
+ * if      (reset[t] == 1) out[t+1] = 0
+ * else if (load[t] == 1)  out[t+1] = in[t]
+ * else if (inc[t] == 1)   out[t+1] = out[t] + 1  (integer addition)
+ * else                    out[t+1] = out[t]
+ */
+
+CHIP PC {
+    IN in[16],load,inc,reset;
+    OUT out[16];
+
+    PARTS:
+    Inc16(in=next, out=nextIncr);
+    
+    Mux16(a=next,b=nextIncr, sel=inc, out=isIncr);
+    Mux16(a=isIncr,b=in, sel=load, out=incrOrNew);
+    Mux16(a=incrOrNew,b[0..15]=false, sel=reset, out=ifResetOut);
+    
+    Register(in=ifResetOut, load=true, out=out,out=next);
+}

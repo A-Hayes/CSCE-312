@@ -1,0 +1,22 @@
+//Asa Hayes 525003952
+
+//Fibonacci Number Generator
+//Given two initial numbers f0 and f1, the sequence will be generated
+
+CHIP Fibonacci {
+	IN f0[16], f1[16], msel, enable1, enable2, enable3 ;
+	OUT out[16];
+
+	PARTS:
+	Mux16(a=f0,b=reg3Out, sel=msel, out=start1OrPrev);
+  
+  Register(in=start1OrPrev, load=enable1, out=reg1Out);
+  
+  Mux16(a=f1,b=reg1Out, sel=msel, out=start2OrPrev);
+  
+  Register(in=start2OrPrev, load=enable2, out=reg2Out);
+  
+  Add16(a=reg1Out,b=reg2Out, out=addTerms);
+  
+  Register(in=addTerms, load=enable3, out=out,out=reg3Out);
+}

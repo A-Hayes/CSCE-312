@@ -1,0 +1,51 @@
+#created for Project 4 of nand2tetris, specifically the extra 
+#asm not listed on site to draw the letters 'ATM', but this 
+#could work with any properly sized bitmap
+import os
+import io
+from PIL import Image, ImageOps
+import numpy as np
+
+#open and invert image
+img = Image.open('ATM.bmp').convert('L')
+img_inverted = ImageOps.invert(img)
+#force image into graayscale
+np_img = np.array(img_inverted)
+np_img[np_img > 0] = 1
+
+#np_img is a 2d array ([row][col]) of all bits, either 1 or 0
+
+#loop thru np_imp
+newArr = np.zeros((256,32,16), dtype=np.int)
+
+colCount=0
+for i in range(0,255):
+  for j in range(0,31):
+    for k in range(0,15):
+      newArr[i][j][k] = np_img[i][colCount]
+      colCount+=1
+  colCount=0   
+
+os.remove("bmpInstruct.txt")
+file = open('bmpInstruct.txt', 'w')
+
+regCounter = 16384
+tempStr = ""
+for i in range(0,255):
+  for j in range(0,31):
+    if 1 in newArr[i][j]:
+      for k in range(0,15):
+        tempStr += str(newArr[i][j][k])
+      file.write("@" + tempStr + "\n")
+      file.write("D=A\n")
+      file.write("@" + str(regCounter) + "\n")
+      file.write("M=D\n")
+    regCounter+=1
+    tempStr = ""
+
+file.close()
+
+
+print(np_img[125])
+
+print(newArr[125])

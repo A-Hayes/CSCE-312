@@ -1,0 +1,33 @@
+// Rock Paper Scissors Chip 
+// Asa Hayes
+
+
+CHIP RPS {
+    IN p1[2], p2[2];
+    OUT out;
+	
+    PARTS:
+    // Case 1
+    Not(in=p1[1], out=nA);
+    And(a=nA, b= p1[0], out=Out1a);
+    And(a=p2[1], b= p2[0], out=Out1b);
+    And(a=Out1a, b=Out1b, out=Out1);
+    
+    // Case 2
+    Not(in=p1[0], out=nB);
+    Not(in=p2[1], out=nC);
+    And(a=p1[1], b=p2[0], out=Out2a);
+    And(a=nB, b=nC, out=Out2b);
+    And(a=Out2a, b=Out2b, out=Out2);
+    
+    // Case 3
+    Not(in=p2[0], out=nD);
+    And(a=p1[1], b=p1[0], out=Out3a);
+    And(a=p2[1], b=nD, out=Out3b);
+    And(a=Out3a, b=Out3b, out=Out3);
+    
+    // OR Combines
+    Or(a=Out1, b=Out2, out=OutA);
+    Or(a=OutA, b=Out3, out=out);
+    
+}

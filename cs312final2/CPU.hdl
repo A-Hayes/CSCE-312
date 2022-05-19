@@ -1,0 +1,198 @@
+// Code Authored by Aakash Tyagi CSCE-312 SP'20
+// This is a toy CPU design for the purpose of building basic CPU design skills
+// This design is authored for CSCE-312 Spring 2020 Final Exam
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//=====================================INSTRUCTIONS FOR THE EXAM==START==============================================
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Some portions of the code are PURPOSEFULLY LEFT INCOMPLETE. You are expected to read the specs, and complete the 
+//code to fully realize the CPU functionality. Look for the specific text string "****MISSING FUNCTIONALITY****" in the 
+//code to identify the portions that are missing functionality. Implement the missing portions and test for correctness.
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Three incremental test files are provided for convenience to incrementally test the functionality of your CPU:
+//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//CPU_MREAD_REG_OP.tst - TESTS CPU arithmetic and logical instructions, and Memory Read Operations
+//CPU_MREAD_REG_OP_MWRITE.tst - TESTS CPU arithmetic and logical instructions, and Memory Read and WRITE Operations
+//CPU.tst - Adds JUMP instructions to form the complete test suite. This is complete test file 
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/////////////////Turnin your completed CPU.hdl to e-campus. No other files need to be turned in.//////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//=====================================INSTRUCTIONS FOR THE EXAM==END=================================================
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CHIP CPU {
+
+    IN N[12], fromM[16], Reset;
+    OUT PCOut[6], ToM[16], WriteM, AddressM[6];
+
+
+//=====================================SPECIFICATIONS START====================================================
+
+//Resources are as follows
+	//12-bit Instructions
+	//16-bit Data
+	//8 general purpose registers: R0 through R7
+	//ALU with two inputs X and Y. The ALU can perform arithmetic and logical instructions on 16-bit data. 
+		//The output appears on the AluOut port and shows the result of performing Arithmetic and Logical Instructions. 
+		//Output flags such as overflow are not tracked.
+	//PC is the 6-bit Program Counter that can be reset to 0 or loaded with 
+		//contents of the selected Register for instruction branching. 
+		//By default the PC increments its state by 1. 
+		//The initial state of the PC is 0.
+
+//Interface Pins are as follows
+	//The CPU interfaces with a 64-word instruction ROM and a 64-Word data memory
+	//An external Reset pin is provided to set the Program Counter state to 0
+	//Input Pins: Instruction: N[11:0], Data from Data Memory: fromM[15:0], Reset
+	//Output Pins: Instruction ROM Address: PCOut[5:0], Data to Data Memory: ToM[15:0], 
+					//Data Memory Write Enable: WriteM, Data Memory Address: AddressM[5:0]
+
+//Instruction N[11:0] is designed to be interpreted as follows:
+	
+	//Instructions are 12-bits: N[11:0] = N11 N10 N9 N8 N7 N6 N5 N4 N3 N2 N1 N0
+	
+	//N[11:10] are OPCODE Bits
+		//N[11:10] = 00 Arithmetic
+		//N[11:10] = 01 Logical
+		//N[11:10] = 10 Memory
+		//N[11:10] = 11 Branch:{Jump to ROM[[Rx]] if ([Ry] == 0)} 
+						//where x and y can range from 0 to 7
+
+	//N[9] is OPTYPE Bit
+		//Arithmetic: N[9] = 0 is ADD, N[9] = 1 is SUB
+		//Logical: N[9] = 0 is AND, N[9] = 1 is OR
+		//Memory: N[9] = 0 is MREAD, N[9] = 1 is MWRITE
+
+
+	//N[8:6] act as follows:
+		//3-bit destination register address 
+			//if (OPCODE is Arithmetic) OR (OPCODE is Logical), or 
+			//if (OPCODE is Memory) AND (OPTYPE is MREAD)
+		//3-bit source register address if (OPCODE is Memory) AND (OPTYPE is MWRITE)
+		//UNUSED in case of Branch
+
+	//N[5:3] and N[2:0] act as follows:
+		//SOURCE1 and SOURCE2 Register Addresses respectively if OPCODE IS Arithmetic or Logical
+		//Address of Rx and Address of Ry respectively in case of Branch 
+		
+
+	//N[5:0] act as follows:
+		//Data Memory address if OPCODE is Memory
+
+	//Examples
+
+		//ADD R0 R1 R2 // operation is R0=R1+R2 and bitmap = 00 0 000 001 010
+		//OR R2 R1 R0 // operation is R2 = R1 OR R0 and bitmap = 01 1 010 001 000
+		//MREAD R2 M63 // operation is R2 = M[63] and bitmap = 10 0 010 111111
+		//JUMP R2 R4// operation is to set the address of next instruction to ROM[[R2]] if ([R4] == 0)
+					// and bitmap = 11 X XXX 010 100 where X is don’t care
+
+//========================================== SPECIFICATIONS END==========================================================
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+PARTS:
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+//===========================================Register Processing - START=================================================
+
+	//Design the 16-bit General Purpose Registers R0 through R7
+	Register(in=RegIn, load=LoadR7, out=R7Out);
+	Register(in=RegIn, load=LoadR6, out=R6Out);
+	Register(in=RegIn, load=LoadR5, out=R5Out);
+	Register(in=RegIn, load=LoadR4, out=R4Out);
+
+  //DONE
+	//****MISSING FUNCTIONALITY 1 START*****
+	//Complete the design of the remaining registers
+	Register(in=RegIn, load=LoadR3, out=R3Out);
+	Register(in=RegIn, load=LoadR2, out=R2Out);
+	Register(in=RegIn, load=LoadR1, out=R1Out);
+	Register(in=RegIn, load=LoadR0, out=R0Out);
+	//****MISSING FUNCTIONALITY 1 END*******
+	
+	//Generate 16-bit RegIn Input
+		// Register Input "RegIn" can be generated from one of the following sources selected with instruction bit that distinguishes ALU vs memory: 
+			//Source1: the ALU Output "AluOut" that conveys the result of arithmetic/logical operation, or
+			//Source2: Data Memory data "fromM" as a result of Data Memory READ Operation
+
+	//****MISSING FUNCTIONALITY 2 START*****
+	Mux16(a=AluOut, b=fromM, sel=N[11], out=RegIn);
+	//****MISSING FUNCTIONALITY 2 END*******
+
+	
+	// Generate the register load signal "LoadReg" according to the below condition:
+	//LoadReg = (N11*N10 + N11*N10'*N9)' = (N11*(N10+N9))' = Nand(N11, (N10+N9))
+	Or(a=N[10], b=N[9], out=N9OrN10);
+	Nand(a=N[11], b=N9OrN10, out=LoadReg);
+	
+	//Propagate the "LoadReg" signal to the destination registers using an 8Way Dmux 
+	//****MISSING FUNCTIONALITY 3 START*****
+	DMux8Way(in=LoadReg, sel=N[6..8], a=LoadR0, b=LoadR1, c=LoadR2, d=LoadR3, e=LoadR4, f=LoadR5, g=LoadR6, h=LoadR7);
+	//****MISSING FUNCTIONALITY 3 END*******
+	
+//=========================================Register Processing - END====================================================
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//=========================================ALU Processing - START=======================================================
+	
+	//Generate the 16-bit X and Y Inputs for the ALU
+	
+	//Generate the X Input "XInput"
+	Mux8Way16(a=R0Out, b=R1Out, c=R2Out, d=R3Out, e=R4Out, f=R5Out, g=R6Out, h=R7Out, sel[0..2]=N[3..5], out=XInput);
+	
+	//Generate the Y Input "YInput"
+	Mux8Way16(a=R0Out, b=R1Out, c=R2Out, d=R3Out, e=R4Out, f=R5Out, g=R6Out, h=R7Out, sel[0..2]=N[0..2], out=YInput);
+	
+	//Connect the ALU with the X and Y data inputs and the AluOp bits that specify the ALU operation. 
+	//****MISSING FUNCTIONALITY 4 START*****
+	ALU(x=XInput,y=YInput, AluOp=N[10..11], AluOut=AluOut);
+	//****MISSING FUNCTIONALITY 4 END*******
+	
+//=========================================ALU Processing - END===========================================================
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//========================================Memory Write Processing - START=================================================
+
+	//Create 16-bit Write Data "ToM" to Data Memory from source registers
+	//****MISSING FUNCTIONALITY 5 START*****
+	//Mux8Way16(a=R7Out, b=R6Out, c=R5Out, d=R4Out, e=R3Out, f=R2Out, g=R1Out, h=R0Out, sel[0..2]=N[6..8], out=ToM);
+	//****MISSING FUNCTIONALITY 5 END*******
+	
+	//Generate Data Memory 6-bit Destination Address "AddressM"
+	//****MISSING FUNCTIONALITY 6 START*****
+	//And16(a[0..5]=N[0..5],b=true,out[0..5]=AddressM);
+	//****MISSING FUNCTIONALITY 6 END*******
+	
+	//Generate Data Memory Write Enable signal "WriteM" = N11*N10'*N9 
+	//****MISSING FUNCTIONALITY 7 START*****
+	//Not(in=N[10], out=negTen);
+  //And(a=N[11], b=negTen, out=tenEleven);
+  //And(a=tenEleven, b=N[9], out=WriteM);
+	//****MISSING FUNCTIONALITY 7 END*******
+	
+//========================================Memory Write Processing - END====================================================
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+//========================================Branch Processing - START==========================================================
+	//Branch syntax: JUMP Rx Ry
+	//Branch Semantics: Jump to ROM[[Rx]] if ([Ry] == 0)
+	//Example: JUMP R2 R4 // operation is to set the address of next instruction to ROM[[R2]] if ([R4] == 0)
+						  // and bitmap = 11 X XXX 010 100 where X is don’t care
+					
+	//Generate Program Counter Input "PCInput" with register Rx selected using Instruction bits N[5:3]
+	Mux8Way16(a=R0Out, b=R1Out, c=R2Out, d=R3Out, e=R4Out, f=R5Out, g=R6Out, h=R7Out, sel[0..2]=N[3..5], out=PCInput);
+
+	//Get the Ry Register Content
+	Mux8Way16(a=R0Out, b=R1Out, c=R2Out, d=R3Out, e=R4Out, f=R5Out, g=R6Out, h=R7Out, sel[0..2]=N[0..2], out=RyOut);
+
+	//Check if RyOut is ZERO. You will need this to generate the PC load signal
+	//****MISSING FUNCTIONALITY 8 START*****
+	
+	//****MISSING FUNCTIONALITY 8 END*******
+	
+	//Connect the Program Counter 
+	//****MISSING FUNCTIONALITY 9 START*****
+	//PC(in=PCInput, load=PCLoad, inc=true, reset=reset, out[0..5]=PCOut);
+	//****MISSING FUNCTIONALITY 9 END*******
+	
+//========================================Jump Processing - END===========================================================
+
+}

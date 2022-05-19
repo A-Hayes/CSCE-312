@@ -1,0 +1,54 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// Custom File: 8-to-3 Priority Encoder
+// Asa Hayes
+
+/**
+ *   Takes in 8 inputs, returns 4 inputs                                 
+ *   Input is 8 bit number                                 
+ *   Outputs 1-3 are 3 digits telling highest value true bit
+ *   Output 4 is Verify bit, which is 0 if there are no 1s in input, and 1 otherwise 
+ */
+
+CHIP Encode8to3 {
+    // Indexes:
+    // 7  6  5  4  3  2  1  0
+    IN a, b, c, d, e, f, g, h;
+    OUT out2, out1, out0, verify;
+
+    PARTS: 
+    // Verify bit, true if one appears anywhere
+    // Indicates 1 at index 0 if other 3 outs are 000
+    Or(a=a,b=b,out=verB);
+    Or(a=verB,b=c,out=verC);
+    Or(a=verC,b=d,out=verD);
+    Or(a=verD,b=e,out=verE);
+    Or(a=verE,b=f,out=verF);
+    Or(a=verF,b=g,out=verG);
+    Or(a=verG,b=h,out=verify);
+    
+    Not(in=b,out=notB);
+    Not(in=c,out=notC);
+    Not(in=d,out=notD);
+    Not(in=f,out=notF);
+    
+    And(a=notD,b=notF,out=notDandnotF);
+    And(a=notDandnotF,b=g, out=exclude0v2);
+    And(a=notD,b=e, out=exclude0v3);
+    Or(a=exclude0v2,b=exclude0v3, out=exclude0v4);
+    Or(a=exclude0v4,b=c, out=exclude0v5);
+    And(a=exclude0v5,b=notB, out=exclude0v6);
+    Or(a=exclude0v6,b=a, out=out0);
+    
+    Or(a=f,b=e, out=exclude1v1);
+    And(a=notC,b=notD, out=exclude1v2);
+    And(a=exclude1v1,b=exclude1v2, out=exclude1v3);
+    Or(a=exclude1v3,b=b, out=exclude1v4);
+    Or(a=exclude1v4,b=a, out=out1);
+    
+    Or(a=d,b=c, out=exclude2v1);
+    Or(a=b,b=a, out=exclude2v2);
+    Or(a=exclude2v1,b=exclude2v2, out=out2);
+    
+}

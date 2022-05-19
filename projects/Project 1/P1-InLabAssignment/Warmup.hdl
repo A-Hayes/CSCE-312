@@ -1,0 +1,15 @@
+/*
+* Chip to implement Problem1 
+* Asa Hayes
+*/
+
+//Functionality Z = B + C'
+
+CHIP Warmup{
+    IN B, C; 
+    OUT Z;
+
+    PARTS:
+    Not(in=C, out=cO);
+    Or(a=B, b=cO, out=Z);
+}

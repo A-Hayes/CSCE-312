@@ -1,0 +1,16 @@
+// Asa Hayes 525003952
+
+//Negation.hdl
+
+/**
+ * Construct a chip that negates its 16-bit input. Assume numbers are represented in 2's complement format.
+ */
+
+CHIP Negation {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+    Not16(in=in, out=tempOut);
+    Inc16(in=tempOut, out=out);
+}

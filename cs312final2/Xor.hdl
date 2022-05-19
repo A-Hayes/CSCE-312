@@ -1,0 +1,21 @@
+// Code Authored by Ezekiel Blevins CSCE-312 SP'20
+
+/**
+ * Exclusive-or gate:
+ * out = not (a == b)
+ */
+
+CHIP Xor {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+	Not(in = a, out = NotA);
+	Not(in = b, out = NotB);
+	
+	And(a = a, b = NotB, out = l);
+	And(a = NotA, b = b, out = r);
+	
+	Or(a = l, b = r, out = out);
+}

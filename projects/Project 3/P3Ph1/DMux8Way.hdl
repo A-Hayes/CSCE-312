@@ -1,0 +1,27 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux16.hdl
+// Asa Hayes
+
+/**
+ * 16-bit multiplexor: 
+ * for i = 0..15 out[i] = a[i] if sel == 0 
+ *                        b[i] if sel == 1
+ */
+
+CHIP DMux8Way {
+    IN in, sel[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+    DMux(in=in,sel=sel[2],a=out1,b=out2);
+
+    DMux(in=out1,sel=sel[1],a=outA,b=outB);
+    DMux(in=out2,sel=sel[1],a=outC,b=outD);
+
+    DMux(in=outA,sel=sel[0],a=a,b=b);
+    DMux(in=outB,sel=sel[0],a=c,b=d);
+    DMux(in=outC,sel=sel[0],a=e,b=f);
+    DMux(in=outD,sel=sel[0],a=g,b=h);
+}

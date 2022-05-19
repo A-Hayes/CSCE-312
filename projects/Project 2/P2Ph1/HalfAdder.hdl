@@ -1,0 +1,15 @@
+// Asa Hayes  525003952
+
+/**
+ * Computes the sum of two bits.
+ */
+
+CHIP HalfAdder {
+    IN a, b;    // 1-bit data inputs a and b
+    OUT sum,    // This is sum bit generated as a result of performing a + b
+        carry;  // This is carry-out generated as a result of performing a + b
+
+    PARTS:
+    Xor(a=a,b=b, out=sum);
+    And(a=a,b=b, out=carry);
+}

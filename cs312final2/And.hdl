@@ -1,0 +1,18 @@
+// Code Authored by Ezekiel Blevins CSCE-312 SP'20
+
+/**
+ * And gate: 
+ * out = 1 if (a == 1 and b == 1)
+ *       0 otherwise
+ */
+
+CHIP And {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+	Not(in = a, out = NotA);
+	Not(in = b, out = NotB);
+	
+	Nor(a = NotA, b = NotB, out = out);
+}

@@ -1,0 +1,15 @@
+// Code Authored by Aakash Tyagi CSCE-312 SP'20
+
+/**
+ * 16-bit incrementer:
+ * out = in + 1 (arithmetic addition)
+ */
+
+CHIP Inc16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+   // Put you code here:
+   Add16(a=in, b[0]=true, carryIn=false, out=out);
+}
